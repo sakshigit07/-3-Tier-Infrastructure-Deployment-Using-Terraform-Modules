@@ -1,0 +1,88 @@
+---
+- name: installation of web server
+  hosts: web
+  become: true
+  tasks: 
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present      
+    - name: start nginx 
+      ansible.builtin.systemd_service:
+        name: nginx
+        state: started
+    - name: add file  to html
+      ansible.builtin.copy:
+        src: index.html
+        dest: /var/www/html/index.html
+        mode: '0644'
+    - name: Configure Reverse Proxy forwarding routes
+      template:
+        src: nginx-web.conf.j2
+        dest: /etc/nginx/sites-available/default
+      notify: Reload Web Nginx
+  handlers:
+    - name: Reload Web Nginx
+      service:
+          name: nginx
+          state: reloaded
+          enabled: true
+## APP TIER
+- name: installation of app tier
+  hosts: app
+  become: true
+  vars_files:
+    - secret_vars.yml
+  vars: 
+    db_host: "{{ vault_db_host }}"
+    db_user: "{{ vault_db_user }}"
+    db_pass: "{{ vault_db_pass }}"
+    db_name: "{{ vault_db_name }}"
+    pkg:
+      - nginx
+      - php
+      - php-fpm
+      - php-mysql
+      - python3-pymysql
+  tasks:
+    - name: Installation of nginx & php
+      ansible.builtin.apt:
+        name: "{{pkg}}"
+        state: present
+        update_cache: yes
+    - name: add file to dest
+      ansible.builtin.copy:
+        src: submit.php
+        dest: /var/www/html/submit.php
+        mode: '0644'
+    - name: Configure Application local processing sockets
+      template:
+          src: nginx-app.conf.j2
+          dest: /etc/nginx/sites-available/default
+      notify: Restart App Services
+    - name: Ensure the students table structure exists in RDS
+      community.mysql.mysql_query:
+        login_host: "{{ db_host }}"
+        login_user: "{{ db_user }}"
+        login_password: "{{ db_pass }}"
+        login_db: "{{ db_name }}"
+        query: |
+          CREATE TABLE IF NOT EXISTS students (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              name VARCHAR(100) NOT NULL,
+              email VARCHAR(100) NOT NULL UNIQUE,
+              phone VARCHAR(20) NOT NULL,
+              place VARCHAR(100) NOT NULL,
+              created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+  handlers:
+    - name: Restart App Services
+      service: 
+          name: "{{item}}"
+          state: restarted
+          enabled: true
+      loop:
+          - nginx
+          - php8.5-fpm
+      become: yes
+

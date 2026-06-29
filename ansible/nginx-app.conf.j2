@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    server_name _;
+
+    root /var/www/html;
+    index submit.php;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.5-fpm.sock;
+        
+        # Inject the secure variables directly into the fastcgi processing environment
+        fastcgi_param DB_HOST "{{ db_host }}";
+        fastcgi_param DB_NAME "{{ db_name }}";
+        fastcgi_param DB_USER "{{ db_user }}";
+        fastcgi_param DB_PASS "{{ db_pass }}";
+
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}

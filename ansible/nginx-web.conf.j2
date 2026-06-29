@@ -1,0 +1,19 @@
+server {
+    listen 80;
+    server_name _;
+
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Proxy form submissions dynamically to the private App Server Tier
+    location /submit.php {
+        proxy_pass http://{{ hostvars[groups['app'][0]]['ansible_host'] }}:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
