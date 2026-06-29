@@ -126,25 +126,25 @@ User Browser -> Web server(nginx) -> App server(php-fpm) -> RDS Database(MySQL)
 
 - Outputs
 
-![alt text](Screenshot(299).png)
+![alt text](images/Screenshot(299).png)
 
 - RDS created by Terraform
 
-![alt text](Screenshot(298).png)     
+![alt text](images/Screenshot(298).png)     
 
 - VPC created by Terraform
 
-![alt text](Screenshot(297).png)
+![alt text](images/Screenshot(297).png)
 
 - 5 server : 2 servers of web , 2 servers of app and 1 ansible server
 
-![alt text](Screenshot(296).png)  
+![alt text](images/Screenshot(296).png)  
 
 Sample app: 
 
-![alt text](Screenshot(295).png)
+![alt text](images/Screenshot(295).png)
 
-![alt text](Screenshot(294).png)
+![alt text](images/Screenshot(294).png)
 
 ---
 
