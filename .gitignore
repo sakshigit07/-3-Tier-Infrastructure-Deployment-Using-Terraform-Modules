@@ -2,4 +2,4 @@ project3.drawio
 .terraform.lock.hcl
 inventory.ini
 .terraform/
-secrets_vars.yml
+secret_vars.yml
