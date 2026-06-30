@@ -9,7 +9,7 @@ Project Requirements:
 
  ## Architecture diagram
 
-![alt text](project3.drawiopng)
+![alt text](project3.drawio.png)
 
 ## PREREQUISITES
 
