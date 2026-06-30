@@ -7,6 +7,10 @@ Terraform modules and automation tools like Ansible or Terraform provisioners.
 Project Requirements:
  
 
+ ## Architecture diagram
+
+![alt text](project3.drawiopng)
+
 ## PREREQUISITES
 
 Before running this pipeline make sure that following environments matches the criteria.
